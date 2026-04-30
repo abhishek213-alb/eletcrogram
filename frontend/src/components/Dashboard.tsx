@@ -8,6 +8,7 @@ import { Assistant } from './Assistant';
 import { Electiongram } from './Electiongram';
 import { Checklist } from './Checklist';
 import { Scenarios } from './Scenarios';
+import { BoothLocator } from './BoothLocator';
 import { useLanguage } from '../i18n/LanguageContext';
 
 export const Dashboard: React.FC = () => {
@@ -84,6 +85,7 @@ export const Dashboard: React.FC = () => {
       
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <Checklist />
+        <BoothLocator />
         <Scenarios />
       </div>
       <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>

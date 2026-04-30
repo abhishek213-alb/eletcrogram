@@ -4,21 +4,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
-import apiRoutes from './routes/api';
 import path from 'path';
-
-import mongoose from 'mongoose';
+import apiRoutes from './routes/api';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8082;
-
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/election-assistant';
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Serve uploads locally if Cloud Storage is not available
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));

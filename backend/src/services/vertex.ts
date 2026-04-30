@@ -1,19 +1,30 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
 import { analyzeSentiment } from './sentiment';
 import dotenv from 'dotenv';
+import { Firestore } from '@google-cloud/firestore';
 
 dotenv.config();
 
 const API_KEY = process.env.GEMINI_API_KEY || 'AIzaSyCzgf11RHYdub3l4MW7CoLskdtEoo964Og';
 const genAI = new GoogleGenerativeAI(API_KEY);
 
-/**
- * 3-Tier AI Fallback Pipeline:
- * Tier 1: Gemini Pro (Primary)
- * Tier 2: Sentiment-aware Heuristics (Local Logic)
- * Tier 3: Static Guidance (Safe Fallback)
- */
-export const getGeminiResponse = async (query: string) => {
+const firestore = new Firestore({
+  projectId: process.env.GCP_PROJECT_ID || 'elctogram',
+});
+
+// Configure strict safety settings for political/hate speech
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+  },
+];
+
+export const getGeminiResponse = async (query: string, userId: string = 'guest_user') => {
   console.log('--- AI Pipeline Start ---');
   
   // Phase 1: Contextual Understanding (Sentiment)
@@ -21,18 +32,34 @@ export const getGeminiResponse = async (query: string) => {
   console.log(`User Sentiment: ${sentiment.label} (${sentiment.score})`);
 
   try {
-    // Tier 1: Primary AI (Gemini Pro)
+    // Fetch User Journey Context (Personalization)
+    const userDoc = await firestore.collection('users').doc(userId).get();
+    const userData = userDoc.exists ? userDoc.data() : null;
+    const checklistProgress = userData?.checklist?.filter((i: any) => i.completed).length || 0;
+    
+    // Fetch Chat History (Context Memory)
+    const historyDoc = await firestore.collection('chats').doc(userId).get();
+    const chatHistory = historyDoc.exists ? historyDoc.data()?.messages || [] : [];
+    
+    // Format history for Gemini
+    const historyContext = chatHistory.slice(-4).map((m: any) => `User: ${m.q}\nAssistant: ${m.a}`).join('\n\n');
+
     console.log('Tier 1: Calling Gemini Pro...');
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-pro", safetySettings });
 
     const prompt = `You are the "Indian Election Assistant", a premium AI designed for voter education.
-    Sentiment Context: The user seems to be feeling ${sentiment.label.toLowerCase()}.
     
-    Guidelines:
-    1. Provide high-fidelity, ECI-compliant answers.
-    2. Use HTML (<strong>, <ul>, <li>) for structure.
-    3. If the user is frustrated (Negative sentiment), be extra patient and reassuring.
-    4. If the user is happy (Positive sentiment), celebrate their democratic enthusiasm.
+    [Context Memory]
+    Previous conversation:
+    ${historyContext}
+    
+    [User Profile]
+    Checklist completed: ${checklistProgress}/3 tasks. If they ask about next steps, guide them based on this.
+    Sentiment: The user feels ${sentiment.label.toLowerCase()}.
+    
+    [Fake News / Fact Check Guidelines]
+    - If the user asks about WhatsApp rumors (e.g., "voting from home via app"), firmly correct them. Voting is strictly in-person or postal ballot for eligible categories.
+    - Always rely on ECI official rules.
     
     User Query: ${query}`;
 
@@ -42,12 +69,16 @@ export const getGeminiResponse = async (query: string) => {
     
     if (text) {
       console.log('Tier 1 Success: Gemini responded.');
+      // Save to Context Memory
+      chatHistory.push({ q: query, a: text });
+      await firestore.collection('chats').doc(userId).set({ messages: chatHistory }, { merge: true });
+      
       return { reply: text, sentiment: sentiment.label };
     }
     throw new Error('Empty response from Gemini');
 
   } catch (error) {
-    console.warn('Tier 1 Failed. Falling back to Tier 2...');
+    console.warn('Tier 1 Failed or Blocked by Safety Filters. Falling back to Tier 2...', error);
     
     // Tier 2: Sentiment-aware Local Logic
     const localReply = getLocalFallback(query, sentiment.label);

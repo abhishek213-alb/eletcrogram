@@ -187,6 +187,7 @@ export const Guides: React.FC = () => {
               </div>
             ))}
           </div>
+        )}
         {/* Tab Content: EVM & Process */}
         {activeTab === 'process' && (
           <div className="bg-white/90 backdrop-blur-md rounded-3xl p-8 shadow-xl border border-green-100 animate-fade-in-up">
