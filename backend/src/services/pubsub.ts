@@ -6,11 +6,14 @@ const TOPIC_NAME = 'electroabhi';
 export const publishEvent = async (data: Record<string, unknown>) => {
   try {
     const dataBuffer = Buffer.from(JSON.stringify(data));
-    const messageId = await pubsub.topic(TOPIC_NAME).publishMessage({ data: dataBuffer });
+    const messageId = await Promise.race([
+      pubsub.topic(TOPIC_NAME).publishMessage({ data: dataBuffer }),
+      new Promise<string>((_, reject) => setTimeout(() => reject(new Error('Pub/Sub Timeout')), 1000))
+    ]);
     console.log(`Message ${messageId} published to topic ${TOPIC_NAME}`);
     return messageId;
-  } catch (error) {
-    console.error(`Received error while publishing to Pub/Sub:`, error);
+  } catch (error: any) {
+    console.warn(`Pub/Sub disabled or unreachable locally. Moving on.`, error.message);
     // Non-blocking error so the app doesn't crash if GCP credentials aren't set
   }
 };

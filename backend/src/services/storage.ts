@@ -27,7 +27,10 @@ export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeT
       blobStream.end(fileBuffer);
     });
 
-    return await uploadPromise;
+    return await Promise.race([
+      uploadPromise,
+      new Promise<string>((_, reject) => setTimeout(() => reject(new Error('Cloud Storage timeout')), 2000))
+    ]);
   } catch (error) {
     console.warn('Cloud Storage failed, falling back to local storage:', error);
     // Local fallback for demo purposes

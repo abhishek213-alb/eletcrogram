@@ -8,12 +8,15 @@ const firestore = new Firestore({
 export const saveUserQuery = async (query: string, reply: string, sentiment: string) => {
   try {
     const docRef = firestore.collection('queries').doc();
-    await docRef.set({
-      query,
-      reply,
-      sentiment,
-      timestamp: FieldValue.serverTimestamp()
-    });
+    await Promise.race([
+      docRef.set({
+        query,
+        reply,
+        sentiment,
+        timestamp: FieldValue.serverTimestamp()
+      }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 2000))
+    ]);
     console.log(`Saved query with sentiment [${sentiment}] to Firestore: ${docRef.id}`);
     return docRef.id;
   } catch (error) {

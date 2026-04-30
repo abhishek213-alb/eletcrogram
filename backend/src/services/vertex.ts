@@ -32,14 +32,31 @@ export const getGeminiResponse = async (query: string, userId: string = 'guest_u
   console.log(`User Sentiment: ${sentiment.label} (${sentiment.score})`);
 
   try {
-    // Fetch User Journey Context (Personalization)
-    const userDoc = await firestore.collection('users').doc(userId).get();
-    const userData = userDoc.exists ? userDoc.data() : null;
-    const checklistProgress = userData?.checklist?.filter((i: any) => i.completed).length || 0;
+    // Use a 2-second timeout for Firestore to prevent hanging if local ADC credentials are missing
+    let checklistProgress = 0;
+    let chatHistory: any[] = [];
     
-    // Fetch Chat History (Context Memory)
-    const historyDoc = await firestore.collection('chats').doc(userId).get();
-    const chatHistory = historyDoc.exists ? historyDoc.data()?.messages || [] : [];
+    try {
+      const fetchContext = async () => {
+        const userDoc = await firestore.collection('users').doc(userId).get();
+        const userData = userDoc.exists ? userDoc.data() : null;
+        const progress = userData?.checklist?.filter((i: any) => i.completed).length || 0;
+        
+        const historyDoc = await firestore.collection('chats').doc(userId).get();
+        const history = historyDoc.exists ? historyDoc.data()?.messages || [] : [];
+        return { progress, history };
+      };
+
+      const contextData: any = await Promise.race([
+        fetchContext(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore context timeout')), 2000))
+      ]);
+      
+      checklistProgress = contextData.progress;
+      chatHistory = contextData.history;
+    } catch (e) {
+      console.warn('Could not fetch context from Firestore (timeout or missing credentials). Proceeding without memory.', e);
+    }
     
     // Format history for Gemini
     const historyContext = chatHistory.slice(-4).map((m: any) => `User: ${m.q}\nAssistant: ${m.a}`).join('\n\n');
@@ -69,9 +86,17 @@ export const getGeminiResponse = async (query: string, userId: string = 'guest_u
     
     if (text) {
       console.log('Tier 1 Success: Gemini responded.');
-      // Save to Context Memory
+      // Save to Context Memory with timeout
       chatHistory.push({ q: query, a: text });
-      await firestore.collection('chats').doc(userId).set({ messages: chatHistory }, { merge: true });
+      
+      try {
+        await Promise.race([
+          firestore.collection('chats').doc(userId).set({ messages: chatHistory }, { merge: true }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Save context timeout')), 2000))
+        ]);
+      } catch (e) {
+        console.warn('Could not save context to Firestore. Moving on.');
+      }
       
       return { reply: text, sentiment: sentiment.label };
     }

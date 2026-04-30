@@ -51,8 +51,6 @@ app.use(cors({
   credentials: true
 }));
 
-import mongoSanitize from 'express-mongo-sanitize';
-
 // Rate Limiting to prevent DDoS
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -64,7 +62,6 @@ app.use(limiter);
 
 // Parse JSON bodies
 app.use(express.json({ limit: '10kb' })); // Limit payload size
-app.use(mongoSanitize()); // Prevent NoSQL Injection
 app.use(morgan('combined')); // Structured logging for Cloud Logging
 
 import journeyRoutes from './routes/journey';
