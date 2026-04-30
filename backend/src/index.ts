@@ -75,8 +75,11 @@ app.use(express.json({ limit: '10kb' })); // Limit payload size
 app.use(mongoSanitize()); // Prevent NoSQL Injection
 app.use(morgan('combined')); // Structured logging for Cloud Logging
 
+import journeyRoutes from './routes/journey';
+
 // API Routes
 app.use('/api', apiRoutes);
+app.use('/api/journey', journeyRoutes);
 
 // Health check endpoint for Cloud Run
 app.get('/health', (req, res) => {
