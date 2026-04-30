@@ -1,0 +1,34 @@
+graph TD
+    User([User Device]) -->|HTTPS Request| CDN[Cloud CDN]
+    CDN --> Host[Firebase Hosting]
+    Host --> Auth[Firebase Authentication]
+    Auth --> APIG[API Gateway]
+    
+    APIG -->|Secured Traffic| CR[Cloud Run - Backend API]
+    CR -.->|Fallback / Lightweight| AE[App Engine]
+    
+    CR -->|Async Tasks| PS[Pub/Sub]
+    PS -->|Trigger| CF[Cloud Functions]
+    CF -->|Emails / Reminders| FCM[Firebase Cloud Messaging]
+    
+    CR -->|Read/Write Session| FS[(Firestore)]
+    CR -->|Structured Election Data| SQL[(Cloud SQL)]
+    CR -->|Document Storage| CS[(Cloud Storage)]
+    
+    CR -->|Semantic Queries| VertexAI[Vertex AI Gemini]
+    CR -->|Voice Analysis| Speech[Cloud Speech-to-Text]
+    CR -->|Document Verification| DocAI[Document AI]
+    
+    CR -->|Analytics Streaming| BQ[(BigQuery)]
+    BQ --> Looker[Looker Studio Dashboards]
+    
+    subgraph DevOps & Security Layer
+        IAM[Cloud IAM]
+        Secret[Secret Manager]
+        Armor[Cloud Armor]
+        Build[Cloud Build CI/CD]
+        Trace[Cloud Trace / Logging]
+    end
+    
+    Armor --> APIG
+    Secret --> CR

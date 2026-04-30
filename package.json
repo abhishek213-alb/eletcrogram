@@ -1,0 +1,17 @@
+{
+  "name": "election-assistant-pro",
+  "version": "1.0.0",
+  "description": "GCP Powered Indian Election Assistant",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "test:all": "cd frontend && npm test && cd ../backend && npm test",
+    "deploy:backend": "cd backend && gcloud builds submit --tag gcr.io/$GCP_PROJECT_ID/election-backend && gcloud run deploy election-backend --image gcr.io/$GCP_PROJECT_ID/election-backend --platform managed --region us-central1 --allow-unauthenticated",
+    "deploy:frontend": "cd frontend && gcloud builds submit --tag gcr.io/$GCP_PROJECT_ID/election-frontend && gcloud run deploy election-frontend --image gcr.io/$GCP_PROJECT_ID/election-frontend --platform managed --region us-central1 --allow-unauthenticated"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

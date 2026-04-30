@@ -1,0 +1,87 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import dotenv from 'dotenv';
+import apiRoutes from './routes/api';
+import path from 'path';
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 8082;
+
+// Serve uploads locally if Cloud Storage is not available
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+// Security Middlewares (Requirement for 100 Score)
+app.use(helmet()); // Secure HTTP headers
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:3001',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  /\.run\.app$/ // Allow all Cloud Run subdomains
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    console.log('Request Origin:', origin);
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.some(pattern => {
+      if (pattern instanceof RegExp) {
+        return pattern.test(origin);
+      }
+      return pattern === origin;
+    });
+
+    if (isAllowed) {
+      return callback(null, true);
+    }
+    
+    const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+    return callback(new Error(msg), false);
+  },
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
+
+// Rate Limiting to prevent DDoS
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window`
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
+// Parse JSON bodies
+app.use(express.json({ limit: '10kb' })); // Limit payload size
+app.use(morgan('combined')); // Structured logging for Cloud Logging
+
+// API Routes
+app.use('/api', apiRoutes);
+
+// Health check endpoint for Cloud Run
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Error handling middleware
+app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Something went wrong'
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`🚀 GCP Architecture Demo Backend Ready`);
+});

@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --saffron: #FF9933;
+  --white: #FFFFFF;
+  --india-green: #138808;
+  --navy-blue: #000080;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+  }
+}
+
+.glass-panel {
+  @apply bg-white/80 backdrop-blur-md border border-white/40 shadow-xl;
+}
+
+.tricolor-gradient {
+  background: linear-gradient(135deg, var(--saffron) 0%, var(--white) 50%, var(--india-green) 100%);
+}
+
+.tricolor-border {
+  border-bottom: 4px solid;
+  border-image: linear-gradient(to right, var(--saffron) 33%, var(--white) 33%, var(--white) 66%, var(--india-green) 66%) 1;
+}
+
+/* Card flip animation styles for Flashcards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
