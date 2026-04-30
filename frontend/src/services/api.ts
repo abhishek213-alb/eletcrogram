@@ -1,15 +1,16 @@
 import axios from 'axios';
 
 // Detect environment and provide safe fallback for non-browser/non-vite contexts
-const getBaseURL = () => {
+const getBaseURL = (): string => {
   // Check for global mock or process.env (Jest)
-  if (typeof (globalThis as any).VITE_API_URL !== 'undefined') {
-    return (globalThis as any).VITE_API_URL;
+  const globalObj = globalThis as unknown as { VITE_API_URL?: string };
+  if (typeof globalObj.VITE_API_URL !== 'undefined') {
+    return globalObj.VITE_API_URL;
   }
   
   // Use a string-based access to avoid parser errors for import.meta
   try {
-    const metaEnv = (import.meta as any).env;
+    const metaEnv = (import.meta as unknown as { env: { VITE_API_URL?: string } }).env;
     if (metaEnv && metaEnv.VITE_API_URL) {
       return metaEnv.VITE_API_URL;
     }

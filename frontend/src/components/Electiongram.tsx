@@ -105,20 +105,27 @@ export const Electiongram: React.FC = () => {
                 </div>
               </div>
               
-              <div className="aspect-square overflow-hidden">
+              <div className="aspect-square overflow-hidden bg-slate-100">
                 <img 
                   src={moment.image} 
                   alt={moment.caption} 
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                 />
               </div>
 
               <div className="p-6">
                 <div className="flex items-center gap-4 mb-4">
-                  <button className="text-slate-400 hover:text-pink-600 transition-colors">
+                  <button 
+                    className="text-slate-400 hover:text-pink-600 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 rounded-full p-1"
+                    aria-label={`Like ${moment.user}'s post`}
+                  >
                     <Heart className="h-6 w-6" />
                   </button>
-                  <button className="text-slate-400 hover:text-indigo-600 transition-colors">
+                  <button 
+                    className="text-slate-400 hover:text-indigo-600 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded-full p-1"
+                    aria-label={`Share ${moment.user}'s post`}
+                  >
                     <Share2 className="h-6 w-6" />
                   </button>
                 </div>

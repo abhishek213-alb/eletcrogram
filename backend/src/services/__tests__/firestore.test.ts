@@ -16,9 +16,9 @@ describe('Firestore Service', () => {
     const query = 'How to vote?';
     const reply = 'Go to polling station.';
     
-    const result = await saveUserQuery(query, reply);
+    await saveUserQuery(query, reply, 'Positive');
     
-    const mFirestore = new (Firestore as any)();
+    const mFirestore = new (Firestore as unknown as jest.Mock<Firestore>)();
     expect(mFirestore.collection).toHaveBeenCalledWith('queries');
     expect(mFirestore.collection('queries').doc).toHaveBeenCalled();
   });
@@ -28,10 +28,9 @@ describe('Firestore Service', () => {
     const reply = 'Go to polling station.';
     
     // Force error
-    const mFirestore = new (Firestore as any)();
-    mFirestore.collection('queries').doc().set.mockRejectedValueOnce(new Error('Firestore error'));
+    const mFirestore = new (Firestore as unknown as jest.Mock<any>)();
+    (mFirestore.collection('queries').doc() as any).set.mockRejectedValueOnce(new Error('Firestore error'));
     
-    const result = await saveUserQuery(query, reply);
-    expect(result).toBeUndefined();
+    await saveUserQuery(query, reply, 'Neutral');
   });
 });

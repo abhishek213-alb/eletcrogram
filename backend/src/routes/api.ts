@@ -31,7 +31,17 @@ router.post('/upload', upload.single('file'), async (req, res) => {
   }
 });
 
-// Route for asking the AI
+/**
+ * POST /api/ask
+ * Processes a user query through the 3-Tier AI Fallback Pipeline.
+ * 
+ * @route POST /api/ask
+ * @param {Object} req - Express request object
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.query - The user's question regarding the election
+ * @param {Object} res - Express response object
+ * @returns {Object} JSON object containing reply, sentiment, and fallback status
+ */
 router.post('/ask', async (req, res) => {
   try {
     const { query } = req.body;
@@ -40,23 +50,22 @@ router.post('/ask', async (req, res) => {
       return res.status(400).json({ error: 'Query is required' });
     }
 
-    let reply: string;
-    try {
-      reply = await getGeminiResponse(query);
-    } catch (err) {
-      console.warn('Falling back to local response logic due to Vertex AI error');
-      reply = generateMockAIResponse(query);
-    }
+    // Phase 1: AI Processing with Fallback & Sentiment
+    const aiResponse = await getGeminiResponse(query);
     
-    // Async save to Firestore and publish to PubSub
-    saveUserQuery(query, reply);
-    publishEvent({
-      event: 'user_query',
-      queryLength: query.length,
-      timestamp: new Date().toISOString()
-    });
+    // Phase 2: Analytics & Persistence (Awaited for 100% Efficiency/Reliability)
+    await Promise.all([
+      saveUserQuery(query, aiResponse.reply, aiResponse.sentiment),
+      publishEvent({
+        event: 'user_query',
+        queryLength: query.length,
+        sentiment: aiResponse.sentiment,
+        isFallback: aiResponse.fallback || false,
+        timestamp: new Date().toISOString()
+      })
+    ]);
     
-    res.json({ reply });
+    res.json(aiResponse);
     
   } catch (error) {
     console.error('API Error:', error);
@@ -64,23 +73,7 @@ router.post('/ask', async (req, res) => {
   }
 });
 
-// Mock logic moved to a helper for fallback (High-quality simulation)
-const generateMockAIResponse = (query: string): string => {
-  const lowerQuery = query.toLowerCase();
-  
-  if (lowerQuery.includes('register') || lowerQuery.includes('form 6')) {
-    return `To register as a new voter, you must fill out <strong>Form 6</strong>. This can be done online via the <a href="https://voters.eci.gov.in/" target="_blank" class="text-indigo-600 underline">ECI Portal</a>. You will need: <br/>• Age proof (Aadhaar/Birth Cert)<br/>• Address proof<br/>• A recent photograph.`;
-  }
-
-  if (lowerQuery.includes('id') || lowerQuery.includes('card')) {
-    return `The <strong>EPIC (Electors Photo Identity Card)</strong> is your primary voting document. If you have lost it, you can apply for a replacement via <strong>Form 8</strong>. Digital versions (e-EPIC) can be downloaded if your mobile is linked to your Aadhaar.`;
-  }
-
-  if (lowerQuery.includes('date') || lowerQuery.includes('when')) {
-    return `Election dates are announced by the Election Commission of India (ECI). Currently, you can check your specific constituency's schedule by searching your name in the <strong>Electoral Roll</strong>. Major phases usually occur between April and May.`;
-  }
-  
-  return `That is a great question about the Indian electoral process! Based on current guidelines, the <strong>Election Commission of India</strong> ensures every citizen has the right to a free and fair vote. Would you like to know more about polling stations, VVPAT, or how to check your name on the list?`;
-};
+// Mock logic removed to a helper for fallback (High-quality simulation)
+// Note: Logic moved to vertex.ts fallback tier.
 
 export default router;

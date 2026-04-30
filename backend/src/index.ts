@@ -7,10 +7,18 @@ import dotenv from 'dotenv';
 import apiRoutes from './routes/api';
 import path from 'path';
 
+import mongoose from 'mongoose';
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8082;
+
+// MongoDB Connection
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/election-assistant';
+mongoose.connect(MONGODB_URI)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
 // Serve uploads locally if Cloud Storage is not available
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -51,6 +59,8 @@ app.use(cors({
   credentials: true
 }));
 
+import mongoSanitize from 'express-mongo-sanitize';
+
 // Rate Limiting to prevent DDoS
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -62,6 +72,7 @@ app.use(limiter);
 
 // Parse JSON bodies
 app.use(express.json({ limit: '10kb' })); // Limit payload size
+app.use(mongoSanitize()); // Prevent NoSQL Injection
 app.use(morgan('combined')); // Structured logging for Cloud Logging
 
 // API Routes
@@ -73,7 +84,8 @@ app.get('/health', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
     error: 'Internal Server Error',
@@ -81,7 +93,11 @@ app.use((err: Error, req: express.Request, res: express.Response, _next: express
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-  console.log(`🚀 GCP Architecture Demo Backend Ready`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+    console.log(`🚀 GCP Architecture Demo Backend Ready`);
+  });
+}
+
+export default app;

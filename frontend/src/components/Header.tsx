@@ -25,37 +25,36 @@ export const Header: React.FC = () => {
         </button>
 
         <nav aria-label="Sections" className="hidden lg:flex items-center gap-8 border-x border-slate-100 px-8 mx-4">
-          <a href="#history" className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors">History</a>
-          <a href="#guides" className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors">Guides</a>
-          <a href="#flashcards" className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors">Flashcards</a>
-          <a href="#quiz" className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors">Quiz</a>
-          <a href="#electiongram" className="text-sm font-bold text-slate-600 hover:text-pink-600 transition-colors">Electiongram</a>
-          <a href="#assistant" className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1">
+          <button onClick={() => navigate('/history')} className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors" aria-label="View Election History">History</button>
+          <button onClick={() => navigate('/guides')} className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors" aria-label="View Voter Guides">Guides</button>
+          <button onClick={() => navigate('/flashcards')} className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors" aria-label="View Flashcards">Flashcards</button>
+          <button onClick={() => navigate('/quiz')} className="text-sm font-bold text-slate-600 hover:text-[#000080] transition-colors" aria-label="Take Election Quiz">Quiz</button>
+          <button onClick={() => navigate('/assistant')} className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors flex items-center gap-1" aria-label="Open AI Assistant">
             <Sparkles className="h-3 w-3" /> Assistant
-          </a>
+          </button>
         </nav>
 
-        <nav aria-label="Global">
+        <nav aria-label="Global Options">
           <ul className="flex items-center gap-2 sm:gap-4">
             <li>
               <div className="relative group">
                 <button 
                   className="flex items-center gap-2 px-3 py-1.5 rounded-full hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-[#000080] text-slate-600 text-sm font-medium"
-                  aria-label="Change Language"
+                  aria-label="Select Language"
                   title="Multi-language Support"
                 >
-                  <Globe2 className="h-4 w-4 text-[#000080]" />
+                  <Globe2 className="h-4 w-4 text-[#000080]" aria-hidden="true" />
                   <span className="hidden sm:inline">{translations[language].language}</span>
                 </button>
                 <div className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 max-h-64 overflow-y-auto py-2">
-                  <button onClick={() => setLanguage('en')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-bold border-b border-slate-50">English</button>
-                  <button onClick={() => setLanguage('hi')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">हिन्दी (Hindi)</button>
-                  <button onClick={() => setLanguage('mr')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">मराठी (Marathi)</button>
-                  <button onClick={() => setLanguage('bn')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">বাংলা (Bengali)</button>
-                  <button onClick={() => setLanguage('te')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">తెలుగు (Telugu)</button>
-                  <button onClick={() => setLanguage('ta')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">தமிழ் (Tamil)</button>
-                  <button onClick={() => setLanguage('gu')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium">ગુજરાતી (Gujarati)</button>
-                  <button onClick={() => setLanguage('kn')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium rounded-b-xl">ಕನ್ನಡ (Kannada)</button>
+                  <button onClick={() => setLanguage('en')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-bold border-b border-slate-50" aria-label="Switch to English">English</button>
+                  <button onClick={() => setLanguage('hi')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Hindi">हिन्दी (Hindi)</button>
+                  <button onClick={() => setLanguage('mr')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Marathi">मराठी (Marathi)</button>
+                  <button onClick={() => setLanguage('bn')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Bengali">বাংলা (Bengali)</button>
+                  <button onClick={() => setLanguage('te')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Telugu">తెలుగు (Telugu)</button>
+                  <button onClick={() => setLanguage('ta')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Tamil">தமிழ் (Tamil)</button>
+                  <button onClick={() => setLanguage('gu')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium" aria-label="Switch to Gujarati">ગુજરાતી (Gujarati)</button>
+                  <button onClick={() => setLanguage('kn')} className="w-full text-left px-4 py-2 hover:bg-slate-50 text-sm font-medium rounded-b-xl" aria-label="Switch to Kannada">ಕನ್ನಡ (Kannada)</button>
                 </div>
               </div>
             </li>

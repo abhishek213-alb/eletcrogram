@@ -17,9 +17,15 @@ FROM nginx:alpine
 # Copy the build output from Stage 1
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy custom nginx config if needed (for SPA routing)
+# Copy custom nginx config with hardened security headers
 RUN echo 'server { \
     listen 8080; \
+    server_tokens off; \
+    add_header Content-Security-Policy "default-src '\''self'\''; script-src '\''self'\'' '\''unsafe-inline'\'' https://apis.google.com https://www.gstatic.com; style-src '\''self'\'' '\''unsafe-inline'\'' https://fonts.googleapis.com; font-src '\''self'\'' https://fonts.gstatic.com; img-src '\''self'\'' data: https://images.unsplash.com https://*.googleusercontent.com; connect-src '\''self'\'' https://*.run.app http://localhost:8082 http://localhost:8080;" always; \
+    add_header X-Frame-Options "SAMEORIGIN" always; \
+    add_header X-Content-Type-Options "nosniff" always; \
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always; \
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always; \
     location / { \
         root /usr/share/nginx/html; \
         index index.html index.htm; \
@@ -27,7 +33,7 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
-# Cloud Run expects the container to listen on $PORT, which is often 8080
+# Cloud Run expects the container to listen on $PORT
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

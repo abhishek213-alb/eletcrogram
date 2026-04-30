@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Assistant } from '../Assistant';
 import { getAIResponse } from '../../services/api';
+import { LanguageProvider } from '../../i18n/LanguageContext';
 import '@testing-library/jest-dom';
 
 // Mock the API service
@@ -19,17 +20,19 @@ jest.mock('dompurify', () => ({
 describe('Assistant Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock scrollIntoView which is not available in JSDOM
+    window.HTMLElement.prototype.scrollIntoView = jest.fn();
   });
 
   it('renders initial assistant message', () => {
-    render(<Assistant />);
-    expect(screen.getByText(/Namaste! I am your AI Election Assistant/i)).toBeInTheDocument();
+    render(<LanguageProvider><Assistant /></LanguageProvider>);
+    expect(screen.getAllByText(/Have a question\? Ask our smart Google Cloud Vertex AI assistant/i).length).toBeGreaterThan(0);
   });
 
   it('sends a query and displays the response', async () => {
     (getAIResponse as jest.Mock).mockResolvedValue({ reply: 'Test response' });
     
-    render(<Assistant />);
+    render(<LanguageProvider><Assistant /></LanguageProvider>);
     
     const input = screen.getByPlaceholderText(/Type your civic query here/i);
     const sendButton = screen.getByLabelText(/Send message/i);
@@ -47,7 +50,7 @@ describe('Assistant Component', () => {
   it('handles API errors gracefully', async () => {
     (getAIResponse as jest.Mock).mockRejectedValue(new Error('API Error'));
     
-    render(<Assistant />);
+    render(<LanguageProvider><Assistant /></LanguageProvider>);
     
     const input = screen.getByPlaceholderText(/Type your civic query here/i);
     const sendButton = screen.getByLabelText(/Send message/i);
