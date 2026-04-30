@@ -1,10 +1,6 @@
 # 🇮🇳 Indian Election Assistant — Built with AI PromptWars
 **Empowering 900 Million Voters with Gemini-Powered Intelligence**
 
-[![Code Quality: 100%](https://img.shields.io/badge/Code_Quality-100%25-brightgreen.svg)](#)
-[![Security: 100%](https://img.shields.io/badge/Security-100%25-brightgreen.svg)](#)
-[![Accessibility: 100%](https://img.shields.io/badge/Accessibility-100%25-brightgreen.svg)](#)
-[![GCP Native: 100%](https://img.shields.io/badge/GCP_Native-100%25-blue.svg)](#)
 
 ---
 
