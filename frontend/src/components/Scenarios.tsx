@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { AlertCircle, CheckCircle, ChevronRight, XCircle } from 'lucide-react';
-import axios from 'axios';
-import { API_URL } from '../config';
+import { updateScenario } from '../services/api';
 
 interface Scenario {
   id: string;
@@ -38,14 +37,12 @@ export const Scenarios: React.FC = () => {
   const userId = 'guest_user';
 
   const handleSelect = async (optionIndex: number, isCorrect: boolean) => {
+    if (selectedOption !== null) return;
     setSelectedOption(optionIndex);
     
     if (isCorrect) {
       try {
-        await axios.post(`${API_URL}/journey/${userId}/scenario`, {
-          scenarioId: mockScenarios[activeScenario].id,
-          passed: true
-        });
+        await updateScenario(userId, mockScenarios[activeScenario].id, true);
       } catch (err) {
         console.error('Failed to save scenario progress', err);
       }
@@ -78,6 +75,7 @@ export const Scenarios: React.FC = () => {
   }
 
   const scenario = mockScenarios[activeScenario];
+  if (!scenario) return null;
 
   return (
     <div className="bg-gradient-to-br from-slate-900 to-indigo-900 rounded-3xl shadow-2xl p-8 text-white mt-8" id="scenarios">
@@ -92,7 +90,8 @@ export const Scenarios: React.FC = () => {
       </div>
 
       <div className="space-y-4">
-        {scenario.options.map((opt, idx) => {
+        {(scenario?.options || []).map((opt, idx) => {
+          if (!opt) return null;
           const isSelected = selectedOption === idx;
           let btnClass = "w-full text-left p-4 rounded-xl border transition-all duration-300 font-medium ";
           
@@ -108,7 +107,7 @@ export const Scenarios: React.FC = () => {
             <div key={idx}>
               <button 
                 disabled={selectedOption !== null}
-                onClick={() => handleSelect(idx, opt.correct)}
+                onClick={() => handleSelect(idx, !!opt.correct)}
                 className={btnClass}
               >
                 {opt.text}
@@ -130,7 +129,7 @@ export const Scenarios: React.FC = () => {
             onClick={nextScenario}
             className="flex items-center gap-2 px-6 py-3 bg-white text-indigo-900 rounded-full font-bold hover:bg-slate-100 transition shadow-lg"
           >
-            {activeScenario < mockScenarios.length - 1 ? 'Next Scenario' : 'Finish Simulation'}
+            {activeScenario < (mockScenarios?.length || 0) - 1 ? 'Next Scenario' : 'Finish Simulation'}
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>

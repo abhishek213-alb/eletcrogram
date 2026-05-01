@@ -15,7 +15,46 @@ html {
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans;
+    @apply bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-300;
+  }
+
+  /* Ultimate Forced Dark Mode */
+  html.dark {
+    filter: invert(1) hue-rotate(180deg);
+    background-color: #000;
+  }
+
+  html.dark body {
+    background-color: #fff; /* Inverted becomes black */
+  }
+
+  /* Keep images, videos and specific elements from being inverted */
+  html.dark img,
+  html.dark video,
+  html.dark iframe,
+  html.dark .no-invert,
+  html.dark [style*="background-image"],
+  html.dark .mic-button {
+    filter: invert(1) hue-rotate(180deg);
+  }
+
+  /* Hide Google Translate Bar */
+  .goog-te-banner-frame.skiptranslate,
+  .goog-te-gadget-icon,
+  #goog-gt-tt,
+  .goog-te-balloon-frame {
+    display: none !important;
+  }
+  body {
+    top: 0 !important;
+  }
+  .goog-tooltip, .goog-tooltip:hover {
+    display: none !important;
+  }
+  .goog-text-highlight {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 }
 

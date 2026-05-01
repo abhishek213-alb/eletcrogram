@@ -105,17 +105,17 @@ export const Assistant: React.FC = () => {
       <div className="max-w-4xl w-full mx-auto px-4 z-10 relative h-[800px]">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">AI Assistant</h2>
-          <p className="mt-4 text-xl text-slate-600 max-w-3xl mx-auto font-medium">Have a question? Ask our smart Google Cloud Vertex AI assistant.</p>
+          <p className="mt-4 text-xl text-slate-600 max-w-3xl mx-auto font-medium">Have a question? Ask our smart Google Gemini AI assistant.</p>
         </div>
         <div className="flex flex-col h-[600px] bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
           <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 p-5 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-indigo-900 flex items-center gap-2">
                 <Bot className="h-6 w-6 text-indigo-600" />
-                Vertex AI Assistant
+                Gemini AI Assistant
               </h2>
               <p className="text-sm text-indigo-600 flex items-center mt-1">
-                <Sparkles className="h-3 w-3 mr-1" /> Powered by Google Cloud
+                <Sparkles className="h-3 w-3 mr-1" /> Powered by Google Gemini
               </p>
             </div>
           </div>

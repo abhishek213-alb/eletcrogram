@@ -1,22 +1,27 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Checklist } from '../Checklist';
 import '@testing-library/jest-dom';
-import axios from 'axios';
+import { fetchJourney } from '../../services/api';
 
-jest.mock('axios');
+// Mock the API service
+jest.mock('../../services/api', () => ({
+  fetchJourney: jest.fn(),
+  updateChecklist: jest.fn()
+}));
 
 describe('Checklist Component', () => {
   beforeEach(() => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: { checklist: [
-      { id: '1', title: 'Verify name on Electoral Roll', completed: false },
-      { id: '2', title: 'Find my polling booth', completed: false },
-      { id: '3', title: 'Keep EPIC/ID ready', completed: false }
-    ] } });
-    (axios.post as jest.Mock).mockResolvedValue({ data: [] });
+    (fetchJourney as jest.Mock).mockResolvedValue({
+      checklist: [
+        { id: '1', title: 'Register to vote', completed: false },
+        { id: '2', title: 'Check name in roll', completed: true }
+      ]
+    });
   });
 
-  it('renders correctly', async () => {
+  it('renders correctly with items', async () => {
     render(<Checklist />);
-    expect(await screen.findByText('Voter Readiness Checklist')).toBeInTheDocument();
+    expect(await screen.findByText('Register to vote')).toBeInTheDocument();
+    expect(await screen.findByText('Check name in roll')).toBeInTheDocument();
   });
 });

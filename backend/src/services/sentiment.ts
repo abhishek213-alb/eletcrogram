@@ -9,7 +9,10 @@ export const analyzeSentiment = async (text: string) => {
       type: 'PLAIN_TEXT' as const,
     };
 
-    const [result] = await client.analyzeSentiment({ document });
+    const [result] = await Promise.race([
+      client.analyzeSentiment({ document }),
+      new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Sentiment Timeout')), 1500))
+    ]);
     const sentiment = result.documentSentiment;
 
     console.log(`Text: ${text}`);

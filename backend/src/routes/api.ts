@@ -17,13 +17,6 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 
     const publicUrl = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
     
-    publishEvent({
-      event: 'file_upload',
-      fileName: req.file.originalname,
-      url: publicUrl,
-      timestamp: new Date().toISOString()
-    });
-
     res.json({ url: publicUrl });
   } catch (error) {
     console.error('Upload Error:', error);
@@ -50,20 +43,8 @@ router.post('/ask', async (req, res) => {
       return res.status(400).json({ error: 'Query is required' });
     }
 
-    // Phase 1: AI Processing with Fallback & Sentiment
+    // Phase 1: AI Processing
     const aiResponse = await getGeminiResponse(query);
-    
-    // Phase 2: Analytics & Persistence (Awaited for 100% Efficiency/Reliability)
-    await Promise.all([
-      saveUserQuery(query, aiResponse.reply, aiResponse.sentiment),
-      publishEvent({
-        event: 'user_query',
-        queryLength: query.length,
-        sentiment: aiResponse.sentiment,
-        isFallback: aiResponse.fallback || false,
-        timestamp: new Date().toISOString()
-      })
-    ]);
     
     res.json(aiResponse);
     

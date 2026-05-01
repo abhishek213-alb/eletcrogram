@@ -1,0 +1,26 @@
+{
+  "guest_user": {
+    "userId": "guest_user",
+    "checklist": [
+      {
+        "id": "1",
+        "title": "Verify name on Electoral Roll",
+        "completed": false
+      },
+      {
+        "id": "2",
+        "title": "Find my polling booth",
+        "completed": false
+      },
+      {
+        "id": "3",
+        "title": "Keep EPIC/ID ready",
+        "completed": false
+      }
+    ],
+    "scenarios": [],
+    "quizScores": [],
+    "createdAt": "2026-04-30T16:11:44.267Z",
+    "updatedAt": "2026-05-01T14:22:53.313Z"
+  }
+}

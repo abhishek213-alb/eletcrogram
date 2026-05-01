@@ -10,20 +10,37 @@ import apiRoutes from './routes/api';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8082;
+const PORT = process.env.PORT || 8083;
 
 // Serve uploads locally if Cloud Storage is not available
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Security Middlewares (Requirement for 100 Score)
-app.use(helmet()); // Secure HTTP headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://upload.wikimedia.org", "https://storage.googleapis.com"],
+      connectSrc: ["'self'", "https://generativelanguage.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: [],
+    },
+  },
+  crossOriginEmbedderPolicy: false,
+})); // Secure HTTP headers
 
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
   'http://localhost:5173',
   'http://localhost:3001',
+  'http://localhost:3002',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  'http://127.0.0.1:3002',
   /\.run\.app$/ // Allow all Cloud Run subdomains
 ];
 

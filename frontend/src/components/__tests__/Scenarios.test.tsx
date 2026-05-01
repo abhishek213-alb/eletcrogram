@@ -1,18 +1,16 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { Scenarios } from '../Scenarios';
 import '@testing-library/jest-dom';
-import axios from 'axios';
 
-jest.mock('axios');
+// Mock the API service
+jest.mock('../../services/api', () => ({
+  updateScenario: jest.fn()
+}));
 
 describe('Scenarios Component', () => {
-  beforeEach(() => {
-    (axios.get as jest.Mock).mockResolvedValue({ data: { scenarios: [] } });
-    (axios.post as jest.Mock).mockResolvedValue({ data: [] });
-  });
-
   it('renders correctly', async () => {
     render(<Scenarios />);
-    expect(await screen.findByText('Election Day Simulations')).toBeInTheDocument();
+    // Updated text match to match the current component header
+    expect(await screen.findByText(/Interactive Scenario Simulation/i)).toBeInTheDocument();
   });
 });

@@ -1,24 +1,42 @@
-import React from 'react';
-import { Header } from './Header';
-import { History } from './History';
-import { Guides } from './Guides';
-import { Flashcards } from './Flashcards';
-import { Quiz } from './Quiz';
-import { Assistant } from './Assistant';
-import { Electiongram } from './Electiongram';
-import { Checklist } from './Checklist';
-import { Scenarios } from './Scenarios';
-import { BoothLocator } from './BoothLocator';
+import React, { Suspense } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+
+import { ErrorBoundary } from './ErrorBoundary';
+
+const Header = React.lazy(() => import('./Header').then(m => ({ default: m.Header })));
+const History = React.lazy(() => import('./History').then(m => ({ default: m.History })));
+const Guides = React.lazy(() => import('./Guides').then(m => ({ default: m.Guides })));
+const Flashcards = React.lazy(() => import('./Flashcards').then(m => ({ default: m.Flashcards })));
+const Quiz = React.lazy(() => import('./Quiz').then(m => ({ default: m.Quiz })));
+const Assistant = React.lazy(() => import('./Assistant').then(m => ({ default: m.Assistant })));
+const Electiongram = React.lazy(() => import('./Electiongram').then(m => ({ default: m.Electiongram })));
+const Checklist = React.lazy(() => import('./Checklist').then(m => ({ default: m.Checklist })));
+const Scenarios = React.lazy(() => import('./Scenarios').then(m => ({ default: m.Scenarios })));
+const BoothLocator = React.lazy(() => import('./BoothLocator').then(m => ({ default: m.BoothLocator })));
+const PartyExplorer = React.lazy(() => import('./PartyExplorer').then(m => ({ default: m.PartyExplorer })));
+const VoterRights = React.lazy(() => import('./VoterRights').then(m => ({ default: m.VoterRights })));
+const CallToAction = React.lazy(() => import('./CallToAction').then(m => ({ default: m.CallToAction })));
+const ConstituencyExplorer = React.lazy(() => import('./ConstituencyExplorer').then(m => ({ default: m.ConstituencyExplorer })));
+const LiveStats = React.lazy(() => import('./LiveStats').then(m => ({ default: m.LiveStats })));
+const ManifestoAnalyzer = React.lazy(() => import('./ManifestoAnalyzer').then(m => ({ default: m.ManifestoAnalyzer })));
+const EVMSimulator = React.lazy(() => import('./EVMSimulator').then(m => ({ default: m.EVMSimulator })));
+
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center py-24">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#000080]"></div>
+  </div>
+);
 
 export const Dashboard: React.FC = () => {
   const { t } = useLanguage();
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden bg-slate-50">
-      <Header />
+      <Suspense fallback={<LoadingSpinner />}>
+        <Header />
+      </Suspense>
       
       {/* Hero Section */}
-      <section id="hero" className="relative min-h-[90vh] flex items-center justify-center pt-16">
+      <section id="hero" className="relative min-h-[70vh] flex items-center justify-center pt-24 overflow-hidden">
         {/* Animated Gradient Background */}
         <div className="absolute inset-0 z-0 opacity-40">
           <div className="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] bg-[#FF9933] rounded-full mix-blend-multiply filter blur-[100px] animate-blob"></div>
@@ -27,74 +45,133 @@ export const Dashboard: React.FC = () => {
         </div>
         <div className="absolute inset-0 bg-slate-50/50 backdrop-blur-3xl z-0"></div>
 
-        <div className="z-10 relative flex flex-col items-center justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Flag Animation Hero Section */}
+        <div className="z-10 relative flex flex-col items-center justify-center max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center flex flex-col items-center justify-center">
             <img 
               src="https://upload.wikimedia.org/wikipedia/commons/4/41/Flag_of_India.svg" 
               alt="Animated Indian Flag" 
-              className="w-48 h-auto mb-8 shadow-2xl rounded-sm hover:scale-105 transition-transform duration-300" 
-              style={{ animation: 'wave 3s infinite ease-in-out' }}
+              className="w-40 h-auto mb-8 shadow-2xl rounded-sm hover:scale-105 transition-transform duration-300" 
             />
-            <style>{`
-              @keyframes wave {
-                0%, 100% { transform: rotate(-2deg); }
-                50% { transform: rotate(2deg); }
-              }
-              @keyframes blob {
-                0% { transform: translate(0px, 0px) scale(1); }
-                33% { transform: translate(30px, -50px) scale(1.1); }
-                66% { transform: translate(-20px, 20px) scale(0.9); }
-                100% { transform: translate(0px, 0px) scale(1); }
-              }
-              .animation-delay-2000 { animation-delay: 2s; }
-              .animation-delay-4000 { animation-delay: 4s; }
-            `}</style>
-            <h1 className="text-5xl md:text-7xl font-extrabold text-slate-900 tracking-tight mb-4">
+            <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4 transition-colors">
               Welcome to the <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF9933] via-[#000080] to-[#138808] drop-shadow-sm">{t('title')}</span>
             </h1>
-            <p className="mt-6 text-xl text-slate-700 max-w-3xl mx-auto font-medium leading-relaxed">
+            <p className="mt-4 text-xl text-slate-700 dark:text-slate-300 max-w-2xl mx-auto font-medium leading-relaxed transition-colors">
               {t('subtitle')}
             </p>
             
-            <a href="#history" className="mt-12 inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-[#000080] hover:bg-blue-900 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 animate-bounce">
+            <a href="#history" className="mt-8 inline-flex items-center justify-center px-8 py-4 border border-transparent text-lg font-bold rounded-full text-white bg-[#000080] hover:bg-blue-900 shadow-xl transition-all duration-300">
               Explore History
             </a>
-          </div>
-
-          {/* GCP Banner */}
-          <div className="mt-24 bg-slate-900/90 backdrop-blur-md rounded-3xl p-8 text-center text-white relative overflow-hidden shadow-2xl border border-slate-700 w-full max-w-4xl">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500 rounded-full mix-blend-screen filter blur-[80px] opacity-30 animate-pulse"></div>
-            <div className="relative z-10">
-              <h2 className="text-2xl font-bold mb-2 tracking-wide">Built with AI - PromptWars Challenge</h2>
-              <p className="text-slate-300 mx-auto font-medium">
-                Made by <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-indigo-400 font-bold">drabhishek</span> for built with ai promptwars challenge. Utilizing Firebase, Firestore, Pub/Sub, and Vertex AI.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Embedded Sections */}
-      <History />
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      <Guides />
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      <Flashcards />
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <Checklist />
-        <BoothLocator />
-        <Scenarios />
-      </div>
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
+      <Suspense fallback={<LoadingSpinner />}>
+        <ErrorBoundary>
+          <LiveStats />
+        </ErrorBoundary>
+      </Suspense>
 
-      <Quiz />
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      <Electiongram />
-      <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
-      <Assistant />
+      {/* Main Content Area */}
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-24">
+        
+        {/* Education Sections */}
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <History />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <Guides />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <ManifestoAnalyzer />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <EVMSimulator />
+          </ErrorBoundary>
+        </Suspense>
+        
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <section>
+              <PartyExplorer />
+            </section>
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <Flashcards />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <VoterRights />
+          </ErrorBoundary>
+        </Suspense>
+        
+        {/* Interaction Tools */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <Suspense fallback={<LoadingSpinner />}>
+            <ErrorBoundary>
+              <Checklist />
+            </ErrorBoundary>
+          </Suspense>
+          <Suspense fallback={<LoadingSpinner />}>
+            <ErrorBoundary>
+              <Scenarios />
+            </ErrorBoundary>
+          </Suspense>
+        </div>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <BoothLocator />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <ConstituencyExplorer />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <Quiz />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <Electiongram />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <CallToAction />
+          </ErrorBoundary>
+        </Suspense>
+
+        {/* Audit Dashboard removed per user request */}
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <Assistant />
+          </ErrorBoundary>
+        </Suspense>
+      </div>
       
       <footer className="bg-slate-900 text-slate-400 py-12 text-center text-sm font-medium">
         <p>© 2026 Indian Election Assistant. Made by <span className="text-white">drabhishek</span> for Built with AI Challenge.</p>

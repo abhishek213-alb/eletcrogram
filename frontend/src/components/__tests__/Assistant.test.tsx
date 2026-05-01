@@ -26,7 +26,7 @@ describe('Assistant Component', () => {
 
   it('renders initial assistant message', () => {
     render(<LanguageProvider><Assistant /></LanguageProvider>);
-    expect(screen.getAllByText(/Have a question\? Ask our smart Google Cloud Vertex AI assistant/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Have a question\? Ask our smart Google Gemini AI assistant/i).length).toBeGreaterThan(0);
   });
 
   it('sends a query and displays the response', async () => {
