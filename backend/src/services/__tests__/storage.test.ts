@@ -7,7 +7,7 @@ jest.mock('@google-cloud/storage', () => {
     createWriteStream: jest.fn().mockImplementation(() => {
       // Return a fake stream that emits events
       return {
-        on: jest.fn().mockImplementation(function(this: any, event, callback) {
+        on: jest.fn().mockImplementation(function(this: { createWriteStream: jest.Mock }, event, callback) {
           if (event === 'finish' && !mFile.createWriteStream.mock.calls.find(c => c[0]?.metadata?.contentType === 'fail')) {
             setTimeout(callback, 0);
           }
@@ -32,7 +32,7 @@ describe('Storage Service', () => {
     
     expect(result).toContain('https://storage.googleapis.com/');
     expect(result).toContain('/electiongram/');
-    const mStorage = new (Storage as unknown as jest.Mock<any>)();
+    const mStorage = new (Storage as unknown as jest.Mock)() as any;
     expect(mStorage.bucket).toHaveBeenCalled();
     expect(mStorage.bucket().file).toHaveBeenCalled();
   });
@@ -41,6 +41,6 @@ describe('Storage Service', () => {
     // The fallback logic in storage.ts catches errors and writes locally
     // So it doesn't throw, it returns a local URL
     const result = await uploadFile(Buffer.from('data'), 'test.png', 'fail');
-    expect(result).toMatch(/\/uploads\/[a-f0-9\-]+\.png$/);
+    expect(result).toMatch(/\/uploads\/[a-f0-9-]+\.png$/);
   });
 });

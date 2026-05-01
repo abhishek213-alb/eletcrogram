@@ -20,17 +20,20 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "https://translate.google.com", "https://translate.googleapis.com"],
+      scriptSrc: ["'self'", "https://translate.google.com", "https://translate.googleapis.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://translate.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://upload.wikimedia.org", "https://storage.googleapis.com", "https://www.google.com", "https://translate.google.com"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://upload.wikimedia.org", "https://storage.googleapis.com", "https://www.google.com", "https://translate.google.com", "https://*.run.app"],
       connectSrc: ["'self'", "https://generativelanguage.googleapis.com", "https://*.run.app", "http://localhost:*"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-      frameSrc: ["'self'", "https://www.google.com", "https://translate.google.com"],
+      frameSrc: ["'self'", "https://www.google.com", "https://maps.google.com", "https://translate.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },
   },
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  referrerPolicy: { policy: "strict-origin-when-cross-origin" },
 })); // Secure HTTP headers
 
 const allowedOrigins = [

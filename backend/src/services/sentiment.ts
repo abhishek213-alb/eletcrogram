@@ -11,7 +11,7 @@ export const analyzeSentiment = async (text: string) => {
 
     const [result] = await Promise.race([
       client.analyzeSentiment({ document }),
-      new Promise<any>((_, reject) => setTimeout(() => reject(new Error('Sentiment Timeout')), 1500))
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('Sentiment Timeout')), 1500))
     ]);
     const sentiment = result.documentSentiment;
 

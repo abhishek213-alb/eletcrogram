@@ -1,4 +1,4 @@
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -31,8 +31,9 @@ export const getGeminiResponse = async (query: string) => {
 
     return { reply: text, sentiment: 'Neutral' };
 
-  } catch (error: any) {
-    console.warn('Gemini API failed, using Simulation Mode:', error.message);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.warn('Gemini API failed, using Simulation Mode:', errorMessage);
     
     // High-quality Simulated AI for the demo
     const simulatedReply = getSimulatedAIResponse(query);

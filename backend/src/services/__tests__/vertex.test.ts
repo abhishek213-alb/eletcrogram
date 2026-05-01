@@ -1,6 +1,5 @@
 import { getGeminiResponse } from '../vertex';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import * as sentimentService from '../sentiment';
 
 jest.mock('@google/generative-ai', () => {
   const mResponse = { text: jest.fn().mockReturnValue('Mocked AI response') };
@@ -23,7 +22,7 @@ describe('Vertex/Gemini Service', () => {
   });
 
   it('should fallback to Tier 2 local logic if Gemini fails and query matches', async () => {
-    const mGenAI = new (GoogleGenerativeAI as unknown as jest.Mock<any>)();
+    const mGenAI = new (GoogleGenerativeAI as unknown as jest.Mock)() as any;
     mGenAI.getGenerativeModel().generateContent.mockRejectedValueOnce(new Error('API Error'));
     
     const result = await getGeminiResponse('How to register?');
@@ -32,7 +31,7 @@ describe('Vertex/Gemini Service', () => {
   });
 
   it('should fallback to Tier 3 static logic if Gemini fails and no local match', async () => {
-    const mGenAI = new (GoogleGenerativeAI as unknown as jest.Mock<any>)();
+    const mGenAI = new (GoogleGenerativeAI as unknown as jest.Mock)() as any;
     mGenAI.getGenerativeModel().generateContent.mockRejectedValueOnce(new Error('API Error'));
     
     const result = await getGeminiResponse('Random question');

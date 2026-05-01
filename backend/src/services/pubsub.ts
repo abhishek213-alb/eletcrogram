@@ -12,8 +12,9 @@ export const publishEvent = async (data: Record<string, unknown>) => {
     ]);
     console.log(`Message ${messageId} published to topic ${TOPIC_NAME}`);
     return messageId;
-  } catch (error: any) {
-    console.warn(`Pub/Sub disabled or unreachable locally. Moving on.`, error.message);
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    console.warn(`Pub/Sub disabled or unreachable locally. Moving on.`, msg);
     // Non-blocking error so the app doesn't crash if GCP credentials aren't set
   }
 };

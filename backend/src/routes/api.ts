@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { publishEvent } from '../services/pubsub';
-import { saveUserQuery } from '../services/firestore';
 import { getGeminiResponse } from '../services/vertex';
 import { uploadFile } from '../services/storage';
 
