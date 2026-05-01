@@ -10,12 +10,14 @@ import { Guides } from './components/Guides';
 import { Quiz } from './components/Quiz';
 import { Flashcards } from './components/Flashcards';
 import { Assistant } from './components/Assistant';
+import { LandingPage } from './components/LandingPage';
 
 function App() {
   return (
     <LanguageProvider>
       <Router>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/history" element={<History />} />
@@ -30,7 +32,7 @@ function App() {
               </main>
             </div>
           } />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </LanguageProvider>
