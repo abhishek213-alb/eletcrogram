@@ -20,6 +20,7 @@ const ConstituencyExplorer = React.lazy(() => import('./ConstituencyExplorer').t
 const LiveStats = React.lazy(() => import('./LiveStats').then(m => ({ default: m.LiveStats })));
 const ManifestoAnalyzer = React.lazy(() => import('./ManifestoAnalyzer').then(m => ({ default: m.ManifestoAnalyzer })));
 const EVMSimulator = React.lazy(() => import('./EVMSimulator').then(m => ({ default: m.EVMSimulator })));
+const FactCheck = React.lazy(() => import('./FactCheck').then(m => ({ default: m.FactCheck })));
 
 const LoadingSpinner = () => (
   <div className="flex justify-center items-center py-24">
@@ -149,6 +150,12 @@ export const Dashboard: React.FC = () => {
         <Suspense fallback={<LoadingSpinner />}>
           <ErrorBoundary>
             <Quiz />
+          </ErrorBoundary>
+        </Suspense>
+
+        <Suspense fallback={<LoadingSpinner />}>
+          <ErrorBoundary>
+            <FactCheck />
           </ErrorBoundary>
         </Suspense>
 

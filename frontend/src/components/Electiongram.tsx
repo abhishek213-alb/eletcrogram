@@ -28,13 +28,15 @@ const moments = [
   }
 ];
 
-
-
 export const Electiongram: React.FC = () => {
   const { t } = useLanguage();
   const [momentList, setMomentList] = useState<Moment[]>(moments);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://images.unsplash.com/photo-1540910419892-f7c748395e96?auto=format&fit=crop&q=80&w=1200'; // Fallback generic election image
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -110,6 +112,7 @@ export const Electiongram: React.FC = () => {
                   src={moment.image} 
                   alt={moment.caption} 
                   loading="lazy"
+                  onError={handleImageError}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                 />
               </div>

@@ -4,7 +4,7 @@ import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 
 const storage = new Storage();
-const BUCKET_NAME = process.env.BUCKET_NAME || 'election-assistant-pro-assets';
+const BUCKET_NAME = process.env.BUCKET_NAME || `${process.env.GCP_PROJECT || 'elctogram'}-assets`;
 
 /**
  * Advanced File Upload Service
@@ -19,12 +19,22 @@ export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeT
 
     await new Promise((resolve, reject) => {
       const stream = file.createWriteStream({
-        metadata: { contentType: mimeType }
+        metadata: { 
+          contentType: mimeType,
+          cacheControl: 'public, max-age=31536000',
+        }
       });
       stream.on('error', (err) => reject(err));
       stream.on('finish', () => resolve(true));
       stream.end(fileBuffer);
     });
+
+    // Make the file public if possible
+    try {
+      await file.makePublic();
+    } catch (e) {
+      console.warn('Could not make file public, check bucket permissions:', e);
+    }
 
     return `https://storage.googleapis.com/${BUCKET_NAME}/electiongram/${fileName}`;
 
