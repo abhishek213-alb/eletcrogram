@@ -20,11 +20,12 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://upload.wikimedia.org", "https://storage.googleapis.com"],
-      connectSrc: ["'self'", "https://generativelanguage.googleapis.com"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://translate.google.com", "https://translate.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://translate.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://upload.wikimedia.org", "https://storage.googleapis.com", "https://www.google.com", "https://translate.google.com"],
+      connectSrc: ["'self'", "https://generativelanguage.googleapis.com", "https://*.run.app", "http://localhost:*"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      frameSrc: ["'self'", "https://www.google.com", "https://translate.google.com"],
       objectSrc: ["'none'"],
       upgradeInsecureRequests: [],
     },

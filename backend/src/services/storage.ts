@@ -39,7 +39,7 @@ export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeT
     const localPath = path.join(uploadDir, fileName);
     fs.writeFileSync(localPath, fileBuffer);
 
-    const baseUrl = process.env.BACKEND_URL || 'http://localhost:8083';
+    const baseUrl = process.env.BACKEND_URL || ''; // Relative path works better for mixed environments
     return `${baseUrl}/uploads/${fileName}`;
   }
 };
