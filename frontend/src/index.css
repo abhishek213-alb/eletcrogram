@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -83,4 +92,22 @@ html {
 }
 .rotate-y-180 {
   transform: rotateY(180deg);
+}
+
+@keyframes progress {
+  0% { width: 0; }
+  100% { width: 62%; }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+.animate-progress {
+  animation: progress 2s ease-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 4s ease-in-out infinite;
 }

@@ -11,6 +11,7 @@ import { Quiz } from './components/Quiz';
 import { Flashcards } from './components/Flashcards';
 import { Assistant } from './components/Assistant';
 import { LandingPage } from './components/LandingPage';
+import { ExcellenceReport } from './components/ExcellenceReport';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/excellence" element={<ExcellenceReport />} />
           <Route path="/history" element={<History />} />
           <Route path="/guides" element={<Guides />} />
           <Route path="/quiz" element={<Quiz />} />

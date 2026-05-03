@@ -12,6 +12,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8083;
 
+// Enable Trust Proxy for Cloud Run (Required for rate limiting & secure cookies)
+app.set('trust proxy', 1);
+
 // Serve uploads locally if Cloud Storage is not available
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
@@ -41,10 +44,12 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3001',
   'http://localhost:3002',
+  'http://localhost:8080',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:3000',
   'http://127.0.0.1:3001',
   'http://127.0.0.1:3002',
+  'https://election-frontend-813017487356.us-central1.run.app',
   /\.run\.app$/ // Allow all Cloud Run subdomains
 ];
 
@@ -91,13 +96,21 @@ import journeyRoutes from './routes/journey';
 app.use('/api', apiRoutes);
 app.use('/api/journey', journeyRoutes);
 
+// Serve Frontend Static Files in Production
+const frontendPath = path.join(process.cwd(), '../frontend/dist');
+app.use(express.static(frontendPath));
+
 // Health check endpoint for Cloud Run
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Catch-all route to serve the frontend index.html (for SPA routing)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
 // Error handling middleware
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
@@ -109,7 +122,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
-    console.log(`🚀 GCP Architecture Demo Backend Ready`);
+    console.log(`🚀 Electrogram Unified Platform Ready`);
   });
 }
 

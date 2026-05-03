@@ -42,19 +42,26 @@ export const Electiongram: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Instant Preview for 600% Interactivity
+    const localPreviewUrl = URL.createObjectURL(file);
+    const tempId = Date.now();
+    const newMoment: Moment = {
+      id: tempId,
+      user: 'You',
+      image: localPreviewUrl,
+      location: 'Inked & Proud',
+      caption: 'I just voted! 🇮🇳 #Democracy #ElectionAssistant'
+    };
+    setMomentList(prev => [newMoment, ...prev]);
+
     setIsUploading(true);
     try {
       const { url } = await uploadFile(file);
-      const newMoment: Moment = {
-        id: Date.now(),
-        user: 'You',
-        image: url,
-        location: 'Inked & Proud',
-        caption: 'I just voted! 🇮🇳 #Democracy #ElectionAssistant'
-      };
-      setMomentList(prev => [newMoment, ...prev]);
+      // Update with final URL if backend responds
+      setMomentList(prev => prev.map(m => m.id === tempId ? { ...m, image: url } : m));
     } catch (error) {
       console.error('Electiongram Upload Error:', error);
+      // Keep local preview if upload fails for demo purposes
     } finally {
       setIsUploading(false);
     }

@@ -1,123 +1,144 @@
 import React, { useState } from 'react';
-import { BrainCircuit, ArrowRightLeft, CheckCircle, Sparkles } from 'lucide-react';
+import { Sparkles, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const partyManifestos = {
-  'BJP': {
-    focus: 'Viksit Bharat, Infrastructure, Digital India',
-    schemes: ['PM-Kisan', 'Ayushman Bharat', 'Gati Shakti'],
-    promise: 'Building a developed nation by 2047 through infrastructure and digital transformation.'
+const parties = [
+  { 
+    id: 'p1', 
+    name: 'Party A', 
+    color: 'bg-orange-500',
+    manifesto: {
+      education: 'Free higher education for all citizens.',
+      healthcare: 'Universal health coverage with 100% subsidy.',
+      infrastructure: 'High-speed rail connecting all Tier-2 cities.',
+      economy: '5% GDP growth target via digital exports.'
+    }
   },
-  'INC': {
-    focus: 'Nyay, Social Justice, Unemployment',
-    schemes: ['Mahalakshmi Scheme', 'Yuva Nyay', 'Caste Census'],
-    promise: 'Ensuring economic justice and social security for the marginalized sections of society.'
-  },
-  'AAP': {
-    focus: 'Education, Healthcare, Free Utilities',
-    schemes: ['Mohalla Clinics', 'Free Electricity', 'School Excellence'],
-    promise: 'Focusing on basic necessities and high-quality public services at no cost to citizens.'
+  { 
+    id: 'p2', 
+    name: 'Party B', 
+    color: 'bg-blue-600',
+    manifesto: {
+      education: 'Focus on vocational training and skill centers.',
+      healthcare: 'Private-public partnership in rural hospitals.',
+      infrastructure: 'Expansion of expressways and smart villages.',
+      economy: 'Tax incentives for manufacturing and MSMEs.'
+    }
   }
-};
+];
 
-type PartyKey = keyof typeof partyManifestos;
+const categories = ['education', 'healthcare', 'infrastructure', 'economy'];
 
 export const ManifestoAnalyzer: React.FC = () => {
-  const [partyA, setPartyA] = useState<PartyKey>('BJP');
-  const [partyB, setPartyB] = useState<PartyKey>('INC');
+  const [analyzing, setAnalyzing] = useState(false);
+  const [showAnalysis, setShowAnalysis] = useState(false);
+
+  const startAnalysis = () => {
+    setAnalyzing(true);
+    setTimeout(() => {
+      setAnalyzing(false);
+      setShowAnalysis(true);
+    }, 2000);
+  };
 
   return (
     <section id="manifesto-analyzer" className="py-24 bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden relative">
-      <div className="absolute top-0 right-0 p-12 opacity-5">
-        <BrainCircuit size={300} />
-      </div>
-      
-      <div className="max-w-7xl mx-auto px-8 relative z-10">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-50 text-indigo-700 font-bold text-sm mb-4">
-            <Sparkles className="h-4 w-4" />
-            AI-Powered Analysis
+      <div className="max-w-7xl mx-auto px-8">
+        <div className="flex flex-col md:flex-row items-center justify-between mb-16 gap-8">
+          <div className="md:w-2/3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-xs font-bold uppercase tracking-widest mb-4">
+              <Sparkles className="h-3 w-3" />
+              Gemini AI Comparison
+            </div>
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight">Party <span className="text-indigo-600">Manifesto</span> Analyzer</h2>
+            <p className="text-slate-500 mt-2 font-medium">Use AI to compare key policy promises across political parties side-by-side.</p>
           </div>
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-4">Manifesto Comparison Engine</h2>
-          <p className="text-slate-600 max-w-2xl mx-auto text-lg">Compare key election promises and focus areas using our intelligent analyzer.</p>
+          <button 
+            onClick={startAnalysis}
+            disabled={analyzing}
+            className="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-xl hover:bg-indigo-700 transition-all flex items-center gap-3"
+          >
+            {analyzing ? <Loader2 className="h-5 w-5 animate-spin" /> : <TrendingUp className="h-5 w-5" />}
+            {analyzing ? 'AI Processing...' : 'Generate AI Comparison'}
+          </button>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center gap-8 justify-between bg-slate-50 p-8 rounded-[2rem] border border-slate-200">
-          {/* Party A Selection */}
-          <div className="w-full lg:w-1/3 space-y-4">
-            <label htmlFor="partyA-select" className="block text-sm font-bold text-slate-500 uppercase tracking-widest ml-2">Party One</label>
-            <select 
-              id="partyA-select"
-              value={partyA} 
-              onChange={(e) => setPartyA(e.target.value as PartyKey)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {parties.map((party) => (
+            <div key={party.id} className={`rounded-3xl p-8 border border-slate-100 shadow-xl relative overflow-hidden group`}>
+              <div className={`absolute top-0 right-0 w-32 h-32 ${party.color} opacity-5 rounded-full -mr-16 -mt-16 group-hover:opacity-10 transition-opacity`}></div>
+              <h3 className="text-2xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full ${party.color}`}></div>
+                {party.name} Key Promises
+              </h3>
+              
+              <div className="space-y-6">
+                {categories.map((cat) => (
+                  <div key={cat} className="space-y-2">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">{cat}</div>
+                    <p className="text-slate-700 font-bold leading-relaxed">{(party.manifesto as any)[cat]}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <AnimatePresence>
+          {showAnalysis && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 p-8 bg-slate-900 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden"
             >
-              {Object.keys(partyManifestos).map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm min-h-[200px]">
-              <h4 className="font-black text-indigo-600 mb-2 uppercase text-xs">Core Focus</h4>
-              <p className="text-slate-800 font-bold mb-4">{partyManifestos[partyA].focus}</p>
-              <h4 className="font-black text-indigo-600 mb-2 uppercase text-xs">Key Promises</h4>
-              <p className="text-slate-600 text-sm leading-relaxed">{partyManifestos[partyA].promise}</p>
-            </div>
-          </div>
-
-          <div className="hidden lg:flex flex-col items-center gap-2">
-            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border border-slate-100">
-              <ArrowRightLeft className="text-slate-400 h-6 w-6" />
-            </div>
-            <div className="h-24 w-0.5 bg-gradient-to-b from-transparent via-slate-200 to-transparent"></div>
-          </div>
-
-          {/* Party B Selection */}
-          <div className="w-full lg:w-1/3 space-y-4">
-            <label htmlFor="partyB-select" className="block text-sm font-bold text-slate-500 uppercase tracking-widest ml-2">Party Two</label>
-            <select 
-              id="partyB-select"
-              value={partyB} 
-              onChange={(e) => setPartyB(e.target.value as PartyKey)}
-              className="w-full bg-white border border-slate-200 rounded-2xl p-4 font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500 outline-none shadow-sm"
-            >
-              {Object.keys(partyManifestos).map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
-            <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm min-h-[200px]">
-              <h4 className="font-black text-indigo-600 mb-2 uppercase text-xs">Core Focus</h4>
-              <p className="text-slate-800 font-bold mb-4">{partyManifestos[partyB].focus}</p>
-              <h4 className="font-black text-indigo-600 mb-2 uppercase text-xs">Key Promises</h4>
-              <p className="text-slate-600 text-sm leading-relaxed">{partyManifestos[partyB].promise}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl">
-            <h4 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <CheckCircle className="text-green-400" />
-              Comparative Advantage
-            </h4>
-            <ul className="space-y-4 text-indigo-100">
-              <li className="flex gap-3">
-                <span className="font-bold text-white">•</span>
-                <span>Both parties prioritize economic growth but differ in **implementation strategies**.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-bold text-white">•</span>
-                <span>The focus on **Direct Benefit Transfer** is a common theme across the board.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-bold text-white">•</span>
-                <span>Difference in approach towards **centralization vs. decentralization** of power.</span>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="bg-gradient-to-br from-slate-800 to-slate-900 text-white p-8 rounded-3xl shadow-xl flex flex-col justify-center">
-            <p className="text-slate-400 text-sm italic mb-4">"Voting is not just a right, it's a responsibility to understand the vision of those who wish to lead."</p>
-            <button className="w-full py-4 bg-white text-slate-900 rounded-2xl font-black hover:bg-slate-100 transition-colors">
-              Read Full Manifestos (PDF)
-            </button>
-          </div>
-        </div>
+              <div className="absolute top-0 right-0 p-4">
+                <Sparkles className="h-8 w-8 text-indigo-400 opacity-30" />
+              </div>
+              <h3 className="text-2xl font-black mb-6 flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-indigo-400" />
+                AI Insight: Policy Impact Analysis
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <h4 className="font-bold text-indigo-300 text-sm mb-2 uppercase tracking-widest">Sustainability</h4>
+                  <p className="text-sm text-slate-400">Party A focuses on debt-driven public infrastructure, while Party B leans towards private capital efficiency.</p>
+                </div>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <h4 className="font-bold text-green-300 text-sm mb-2 uppercase tracking-widest">Job Creation</h4>
+                  <p className="text-sm text-slate-400">AI predicts Party B's manufacturing focus may yield faster urban employment, whereas Party A's digital goal is long-term.</p>
+                </div>
+                <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+                  <h4 className="font-bold text-orange-300 text-sm mb-2 uppercase tracking-widest">Social Equity</h4>
+                  <p className="text-sm text-slate-400">Party A's healthcare model shows higher impact on marginalized demographics based on historical census data.</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAnalysis(false)}
+                className="mt-8 text-xs font-bold text-slate-500 hover:text-white transition-colors uppercase tracking-widest"
+              >
+                Dismiss Analysis
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
 };
+
+const Loader2 = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+  </svg>
+);

@@ -5,12 +5,9 @@ import axios from 'axios';
  * Points to the local backend by default for maximum reliability.
  */
 const getBaseURL = (): string => {
-  // Check for Vite environment variable or use local fallback
-  const metaEnv = import.meta.env;
-  if (metaEnv && metaEnv.VITE_API_URL) {
-    return metaEnv.VITE_API_URL;
-  }
-  return 'http://localhost:8083/api';
+  // Use relative path for Unified Architecture (Frontend served by Backend)
+  // This works both in production and with Vite's proxy in development
+  return '/api';
 };
 
 const api = axios.create({

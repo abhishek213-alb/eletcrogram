@@ -1,12 +1,13 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Assistant } from '../Assistant';
-import { getAIResponse } from '../../services/api';
+import { getAIResponse, uploadFile } from '../../services/api';
 import { LanguageProvider } from '../../i18n/LanguageContext';
 import '@testing-library/jest-dom';
 
 // Mock the API service
 jest.mock('../../services/api', () => ({
-  getAIResponse: jest.fn()
+  getAIResponse: jest.fn(),
+  uploadFile: jest.fn()
 }));
 
 // Mock DOMPurify
@@ -44,6 +45,33 @@ describe('Assistant Component', () => {
     
     await waitFor(() => {
       expect(screen.getByText(/Test response/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles suggestion chips', async () => {
+    (getAIResponse as jest.Mock).mockResolvedValue({ reply: 'Suggestion response' });
+    render(<LanguageProvider><Assistant /></LanguageProvider>);
+    
+    const suggestion = screen.getByText(/How do I register to vote\?/i);
+    fireEvent.click(suggestion);
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Suggestion response/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles file upload', async () => {
+    (uploadFile as jest.Mock).mockResolvedValue({ url: 'http://test.com/file.jpg' });
+    render(<LanguageProvider><Assistant /></LanguageProvider>);
+    
+    const file = new File(['hello'], 'hello.png', { type: 'image/png' });
+    const input = screen.getByLabelText(/Upload document/i).nextElementSibling as HTMLInputElement;
+    
+    fireEvent.change(input, { target: { files: [file] } });
+    
+    await waitFor(() => {
+      expect(screen.getByText(/Uploaded a file: hello.png/i)).toBeInTheDocument();
+      expect(screen.getByText(/I've received your document/i)).toBeInTheDocument();
     });
   });
 

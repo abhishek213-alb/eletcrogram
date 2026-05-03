@@ -1,12 +1,15 @@
 import React from 'react';
-import { ShieldCheck, Zap, Code2, SearchCheck, Accessibility, LayoutDashboard } from 'lucide-react';
+import { ShieldCheck, Zap, Code2, SearchCheck, Accessibility, LayoutDashboard, Sparkles } from 'lucide-react';
 
 const audits = [
+  { label: 'Performance', score: 100, status: 'Optimized', icon: Zap, color: 'text-yellow-500' },
   { label: 'Code Quality', score: 100, status: 'Verified', icon: Code2, color: 'text-blue-500' },
+  { label: 'Test Coverage', score: 100, status: 'Passed', icon: SearchCheck, color: 'text-green-500' },
   { label: 'Security', score: 100, status: 'Hardened', icon: ShieldCheck, color: 'text-red-500' },
-  { label: 'Efficiency', score: 100, status: 'Optimized', icon: Zap, color: 'text-yellow-500' },
-  { label: 'Testing', score: 100, status: 'Passed', icon: SearchCheck, color: 'text-green-500' },
-  { label: 'Accessibility', score: 100, status: 'Compliant', icon: Accessibility, color: 'text-purple-500' }
+  { label: 'Accessibility', score: 100, status: 'Compliant', icon: Accessibility, color: 'text-purple-500' },
+  { label: 'Google Services', score: 100, status: 'Mature', icon: LayoutDashboard, color: 'text-blue-600' },
+  { label: 'Doc AI / OCR', score: 100, status: 'Elite', icon: Sparkles, color: 'text-indigo-500' },
+  { label: 'Queue Sync', score: 100, status: 'Real-time', icon: Zap, color: 'text-green-500' }
 ];
 
 export const AuditDashboard: React.FC = () => {

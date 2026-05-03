@@ -10,7 +10,7 @@ const BUCKET_NAME = process.env.BUCKET_NAME || `${process.env.GCP_PROJECT || 'el
  * Advanced File Upload Service
  * Uses Google Cloud Storage with a resilient local fallback.
  */
-export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeType: string) => {
+export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeType: string, host?: string) => {
   const fileName = `${uuidv4()}${path.extname(originalName)}`;
   
   try {
@@ -49,7 +49,9 @@ export const uploadFile = async (fileBuffer: Buffer, originalName: string, mimeT
     const localPath = path.join(uploadDir, fileName);
     fs.writeFileSync(localPath, fileBuffer);
 
-    const baseUrl = process.env.BACKEND_URL || ''; // Relative path works better for mixed environments
-    return `${baseUrl}/uploads/${fileName}`;
+    const protocol = host?.includes('localhost') ? 'http' : 'https';
+    const baseUrl = host ? `${protocol}://${host}` : (process.env.BACKEND_URL || ''); 
+    
+    return baseUrl ? `${baseUrl}/uploads/${fileName}` : `/uploads/${fileName}`;
   }
 };

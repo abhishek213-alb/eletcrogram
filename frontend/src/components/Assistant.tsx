@@ -49,9 +49,29 @@ export const Assistant: React.FC = () => {
       const aiMessage: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'assistant', 
-        content: response.reply 
+        content: '' // Start empty for typing effect
       };
       setMessages(prev => [...prev, aiMessage]);
+      
+      // Typing effect
+      let currentText = '';
+      const fullText = response.reply;
+      const speed = 20; // ms per character
+      
+      const type = (index: number) => {
+        if (index < fullText.length) {
+          currentText += fullText[index];
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].content = currentText;
+            return newMessages;
+          });
+          setTimeout(() => type(index + 1), speed);
+        }
+      };
+      
+      type(0);
+
     } catch (error) {
       const errorMessage: Message = { 
         id: (Date.now() + 1).toString(), 
@@ -104,7 +124,7 @@ export const Assistant: React.FC = () => {
     <section id="assistant" className="relative overflow-hidden py-24 bg-slate-50">
       <div className="max-w-4xl w-full mx-auto px-4 z-10 relative h-[800px]">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">AI Assistant</h2>
+          <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight">Electrogram Vartalap</h2>
           <p className="mt-4 text-xl text-slate-600 max-w-3xl mx-auto font-medium">Have a question? Ask our smart Google Gemini AI assistant.</p>
         </div>
         <div className="flex flex-col h-[600px] bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
@@ -112,10 +132,10 @@ export const Assistant: React.FC = () => {
             <div>
               <h2 className="text-xl font-bold text-indigo-900 flex items-center gap-2">
                 <Bot className="h-6 w-6 text-indigo-600" />
-                Gemini AI Assistant
+                Electrogram Vartalap
               </h2>
               <p className="text-sm text-indigo-600 flex items-center mt-1">
-                <Sparkles className="h-3 w-3 mr-1" /> Powered by Google Gemini
+                <Sparkles className="h-3 w-3 mr-1" /> Powered by Google Special Engine
               </p>
             </div>
           </div>

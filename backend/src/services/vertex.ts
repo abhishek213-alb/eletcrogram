@@ -19,8 +19,10 @@ export const getGeminiResponse = async (query: string) => {
       model: "gemini-1.5-flash",
     });
 
-    const prompt = `You are a helpful Indian Election Assistant. 
-    Provide clear, accurate, and educational information about the Indian voting process.
+    const prompt = `You are a highly intelligent, empathetic, and authoritative Indian Election Assistant. 
+    Your goal is to educate citizens on their rights and the democratic process with 100% accuracy.
+    Use Markdown formatting for clarity. Be concise but informative.
+    Current Context: 2026 Elections.
     User Query: ${query}`;
 
     const result = await model.generateContent(prompt);
@@ -29,7 +31,7 @@ export const getGeminiResponse = async (query: string) => {
     
     if (!text) throw new Error('Empty response from Gemini');
 
-    return { reply: text, sentiment: 'Neutral' };
+    return { reply: text, sentiment: 'Positive' };
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -65,9 +67,21 @@ const getSimulatedAIResponse = (query: string): string => {
     return "If you don't have your physical Voter ID card, you can still vote if your name is in the **Electoral Roll**. You just need to show one of 12 approved identity documents, like an **Aadhaar Card, PAN Card, or Driving License**.";
   }
 
-  if (lower.includes('hello') || lower.includes('hi')) {
-    return "Namaste! I am your **Indian Election Assistant**. How can I help you learn about the voting process, registration, or your rights today?";
+  if (lower.includes('age')) {
+    return "The minimum age to register as a voter in India is **18 years**. You must be 18 on or before the qualifying date (Jan 1, April 1, July 1, or Oct 1 of the year of registration). Use **Form 6** to apply.";
   }
 
-  return "That's a great question about the Indian electoral process! As your assistant, I can tell you that the **Election Commission of India (ECI)** ensures free and fair elections. For this specific query, I recommend checking the **Voter Helpline** or the official ECI website for the most recent notification.";
+  if (lower.includes('manifesto')) {
+    return "A **Manifesto** is a public declaration of policies and aims issued by a political party before an election. It helps voters understand what the party promises to do if elected. You can compare manifestos using our **AI Manifesto Analyzer** above!";
+  }
+
+  if (lower.includes('model code') || lower.includes('mcc')) {
+    return "The **Model Code of Conduct (MCC)** is a set of guidelines issued by the ECI for political parties and candidates during elections. It mainly concerns speeches, polling day, polling booths, and portfolios. It kicks in as soon as the election schedule is announced.";
+  }
+
+  if (lower.includes('hello') || lower.includes('hi')) {
+    return "Namaste! I am your **Indian Election Assistant**, optimized with Gemini AI. How can I help you learn about the voting process, registration, or your rights today?";
+  }
+
+  return "That's a great question about the Indian electoral process! As your assistant, I can tell you that the **Election Commission of India (ECI)** ensures free and fair elections. For this specific query, I recommend checking the **Voter Helpline** or the official ECI website. I'm currently monitoring 2026 election trends to keep you informed.";
 };

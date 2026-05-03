@@ -13,7 +13,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    const publicUrl = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype);
+    const publicUrl = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype, req.get('host'));
     
     res.json({ url: publicUrl });
   } catch (error) {
